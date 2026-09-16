@@ -40,7 +40,7 @@ jobs:
     - name: Create ZIP archive
       run: >
         Compress-Archive -Path ./publish/win-x64/*
-        -DestinationPath ./DiscordSecurityBot-${{ github.ref_name }}-win-x64.zip
+        -DestinationPath ./DiscordSecurityBot-v1.0.${{ github.run_number }}-win-x64.zip
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
