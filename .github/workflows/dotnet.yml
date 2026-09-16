@@ -1,0 +1,51 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+# Run workflow when pushing a tag that starts with ‘v’ (example: v1.0.0)
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Create release
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Publish for Windows
+      run: >
+        dotnet publish --configuration Release --no-build
+        -r win-x64
+        --self-contained true
+        -p:PublishSingleFile=true
+        --output ./publish/win-x64
+
+    - name: Create ZIP archive
+      run: >
+        Compress-Archive -Path ./publish/win-x64/*
+        -DestinationPath ./DiscordSecurityBot-${{ github.ref_name }}-win-x64.zip
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: DiscordSecurityBot-${{ github.ref_name }}-win-x64.zip
+        generate_release_notes: true
