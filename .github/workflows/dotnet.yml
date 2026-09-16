@@ -3,11 +3,9 @@
 
 name: .NET
 
-# Run workflow when pushing a tag that starts with ‘v’ (example: v1.0.0)
+# Run workflow manually.
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
 
 # Create release
 permissions:
