@@ -45,5 +45,6 @@ jobs:
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        files: DiscordSecurityBot-${{ github.ref_name }}-win-x64.zip
+        name: DiscordSecurityBot-v${{ github.run_number }}
+        files: DiscordSecurityBot-v${{ github.run_number }}-win-x64.zip
         generate_release_notes: true
