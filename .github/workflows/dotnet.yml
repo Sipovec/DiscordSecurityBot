@@ -26,12 +26,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore -r win-x64
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-
     - name: Publish for Windows
       run: >
-        dotnet publish --configuration Release --no-build
+        dotnet publish --configuration Release
         -r win-x64
         --self-contained true
         -p:PublishSingleFile=true
