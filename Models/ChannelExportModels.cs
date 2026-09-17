@@ -21,13 +21,12 @@ public class ChannelRecord
     public ChannelRecord(SocketGuildChannel channel, SocketGuild guild)
     {
         ChannelName = channel.Name;
-        ChannelType = channel.GetChannelType().ToString();
-
+        ChannelType = channel.GetChannelType().ToString() ?? "Unknown";
         CategoryName = channel is INestedChannel { CategoryId: ulong catId }
             ? guild.GetChannel(catId)?.Name ?? ""
             : "";
 
-        // 2. Наполнение специфичных полей (VoiceChannel проверяется ПЕРВЫМ из-за наследования)
+        // Specific fields
         switch (channel)
         {
             case SocketVoiceChannel voiceChannel:
@@ -42,7 +41,7 @@ public class ChannelRecord
                 break;
         }
 
-        // 3. Сбор переопределений прав (overwrites)
+        // Overwrites
         if (channel.PermissionOverwrites.Count > 0)
         {
             IEnumerable<OverwriteRecord> overwriteRecords = channel.PermissionOverwrites.Select(overwrite =>
@@ -71,12 +70,4 @@ public class ChannelRecord
             OverwritesJson = JsonSerializer.Serialize(overwriteRecords);
         }
     }
-}
-
-public class OverwriteRecord
-{
-    public string TargetName { get; init; } = string.Empty;
-    public string TargetType { get; init; } = string.Empty;
-    public List<string> Allow { get; init; } = [];
-    public List<string> Deny { get; init; } = [];
 }
