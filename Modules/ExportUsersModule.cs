@@ -40,13 +40,12 @@ public class ExportUsersModule(ICsvExportService exportService) : ModuleBase
             return;
         }
 
-        // Поиск ролей по имени (без учёта регистра)
         List<IRole> foundRoles = [];
         List<string> notFound = [];
 
         foreach (string name in roleNames)
         {
-            // Убираем возможный символ '@' в начале, если пользователь его поставил
+            // Del '@' symbol
             string cleanName = name.StartsWith('@') ? name[1..] : name;
 
             SocketRole? role = guild.Roles.FirstOrDefault(r =>
@@ -64,53 +63,120 @@ public class ExportUsersModule(ICsvExportService exportService) : ModuleBase
 
         if (foundRoles.Count == 0)
         {
-            string msg = "Не найдено ни одной роли. Проверьте названия.\n" +
-                      $"Не найдены: `{string.Join("`, `", notFound)}`";
-            await FollowupAsync(msg, ephemeral: true);
+            await FollowupAsync("Roles not found", ephemeral: true);
             return;
         }
 
         if (notFound.Count > 0)
         {
             await FollowupAsync(
-                $"Следующие роли не найдены: `{string.Join("`, `", notFound)}`\n" +
-                "Остальные роли будут обработаны.", ephemeral: true);
+                $"Roles not found: `{string.Join("`, `", notFound)}`", ephemeral: true);
         }
 
-        // Загрузка участников
-        await guild.DownloadUsersAsync(); // Нужен GatewayIntents.GuildMembers
-        IReadOnlyCollection<SocketGuildUser> allUsers = guild.Users;
-
-        // Фильтрация по найденным ролям
+        // Get users for role
         HashSet<ulong> targetRoleIds = [.. foundRoles.Select(r => r.Id)];
-        List<SocketGuildUser> filteredUsers = [.. allUsers.Where(u => u.Roles.Any(r => targetRoleIds.Contains(r.Id)))];
+        List<IGuildUser> filteredUsers = await SearchMembersByRolesAsync(guild, targetRoleIds);
 
         if (filteredUsers.Count == 0)
         {
-            await FollowupAsync($"Участников с указанными ролями не найдено.", ephemeral: true);
+            await FollowupAsync($"No users with the specified roles were found.", ephemeral: true);
             return;
         }
 
-        // Формирование CSV
+        // CSV format
         StringBuilder sb = new();
 
         string[] headers = ["Username", "Display Name", "User ID", "Joined At", "Roles"];
         sb.AppendLine(string.Join(",", headers.Select(CsvFormatter.FormatCsvField)));
 
-        foreach (SocketGuildUser? user in filteredUsers.OrderBy(u => u.Username))
+        foreach (IGuildUser user in filteredUsers.OrderBy(u => u.Username))
         {
+            List<string?> roleNamesList = 
+                [.. user.RoleIds
+                .Where(id => id != guild.EveryoneRole.Id)
+                .Select(id => guild.GetRole(id)?.Name)
+                .Where(name => name != null)
+                ];
+
             string[] values =
             [
                 user.Username,
-                user.DisplayName ?? user.Username,
+                user.DisplayName ?? "",
                 user.Id.ToString(),
                 user.JoinedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? "N/A",
-                string.Join(", ", user.Roles.Where(r => r.Id != guild.EveryoneRole.Id).Select(r => r.Name)),
+                string.Join(", ", roleNamesList),
             ];
             sb.AppendLine(string.Join(",", values.Select(CsvFormatter.FormatCsvField)));
         }
 
-        // Сохранение в файл
+        // Save file
         await _exportService.SaveCsvAsync(guild, "users", sb.ToString());
+    }
+
+    /// <summary>
+    /// Возвращает список пользователей с указанными ролями.
+    /// </summary>
+    /// <param name="guild"></param>
+    /// <param name="roleIds"></param>
+    /// <returns></returns>
+    private static async Task<List<IGuildUser>> SearchMembersByRolesAsync(SocketGuild guild, HashSet<ulong> roleIds)
+    {
+        List<IGuildUser> allUsers = [];
+        const int pageSize = 1000;
+
+        // Базовый фильтр: участник должен иметь хотя бы одну из указанных ролей (OR)
+        MemberSearchSnowflakeQuery roleQuery = new()
+        {
+            OrQuery = [.. roleIds]
+        };
+
+        MemberSearchFilter filter = new()
+        {
+            RoleIds = roleQuery
+        };
+
+        MemberSearchPropertiesV2 properties = new()
+        {
+            OrQuery = filter
+        };
+
+        MemberSearchPaginationFilter? after = null;
+
+        while (true)
+        {
+            if (after != null)
+            { 
+                properties.After = after; 
+            }
+
+            MemberSearchResult result;
+            try
+            {
+                // Не требует GuildMembers intent, в отличие от DownloadUsersAsync()
+                result = await guild.SearchUsersAsyncV2(pageSize, properties);
+            }
+            catch
+            {
+                break;
+            }
+
+            if (result.Members.Count == 0)
+            {
+                break;
+            }
+
+            allUsers.AddRange(result.Members.Select(m => m.User));
+
+            if (result.Members.Count < pageSize)
+            {
+                break;
+            }
+
+            // Курсор для следующей страницы: последний пользователь текущей страницы
+            IGuildUser lastUser = result.Members.Last().User;
+            after = new MemberSearchPaginationFilter(lastUser.Id, lastUser.JoinedAt ?? DateTimeOffset.MinValue);
+        }
+
+        return allUsers;
     }
 }

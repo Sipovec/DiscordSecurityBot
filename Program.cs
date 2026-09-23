@@ -43,7 +43,7 @@ class Program
                 {
                     DiscordSocketConfig socketConfig = new()
                     {
-                        GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMembers,
+                        GatewayIntents = GatewayIntents.Guilds,
                         LogLevel = LogSeverity.Info,
                         AlwaysDownloadUsers = false,
                     };
