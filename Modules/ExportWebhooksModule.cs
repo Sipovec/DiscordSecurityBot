@@ -21,7 +21,7 @@ public class ExportWebhooksModule(ICsvExportService exportService) : ModuleBase
     {
         SocketGuild guild = Context.Guild;
 
-        IReadOnlyCollection<IWebhook> webhooks = await guild.GetWebhooksAsync(); // Нужны права
+        IReadOnlyCollection<IWebhook> webhooks = await guild.GetWebhooksAsync(); // Need ManageWebhooks
 
         IOrderedEnumerable<IWebhook> sortedWebhooks = webhooks.OrderBy(w => w.Name ?? string.Empty);
 
