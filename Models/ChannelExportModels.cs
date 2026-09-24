@@ -37,7 +37,11 @@ public class ChannelRecord
             case SocketTextChannel textChannel:
                 Topic = textChannel.Topic ?? "";
                 Nsfw = textChannel.IsNsfw;
-                SlowMode = textChannel.SlowModeInterval;
+
+                // News-channels don't support slow mode (NotSupportedException)
+                SlowMode = textChannel is SocketNewsChannel
+                    ? 0
+                    : textChannel.SlowModeInterval;
                 break;
         }
 
