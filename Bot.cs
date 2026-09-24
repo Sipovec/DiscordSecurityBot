@@ -74,21 +74,20 @@ public class Bot
             _ => LogLevel.Information
         };
 
-    bool _commandsRegistered = false;
+    private int _commandsRegistered = 0;
 
     // Регистрация команд для гильдии (ID указывается в appsettings)
     private async Task OnReadyAsync()
     {
-        if (_commandsRegistered == false)
+        if (Interlocked.Exchange(ref _commandsRegistered, 1) == 0)
         {
-        #if DEBUG
-            await _interactions.RegisterCommandsToGuildAsync(_config.TestGuildId, deleteMissing: true);
-        #else
-            // Глобал. регистрация, есть задержка от минут до часа.
-            // Ограничение на 100 глобал. команд, но можно делать подкоманды
-            await _interactions.RegisterCommandsGloballyAsync(deleteMissing: true);
-        #endif
-            _commandsRegistered = true;
+            #if DEBUG
+                await _interactions.RegisterCommandsToGuildAsync(_config.TestGuildId, deleteMissing: true);
+            #else
+                // Глобал. регистрация, есть задержка от минут до часа.
+                // Ограничение на 100 глобал. команд, но можно делать подкоманды
+                await _interactions.RegisterCommandsGloballyAsync(deleteMissing: true);
+            #endif
         }
     }
 
