@@ -81,12 +81,13 @@ public class Bot
     {
         if (_commandsRegistered == false)
         {
+        #if DEBUG
             await _interactions.RegisterCommandsToGuildAsync(_config.TestGuildId, deleteMissing: true);
-
+        #else
             // Глобал. регистрация, есть задержка от минут до часа.
             // Ограничение на 100 глобал. команд, но можно делать подкоманды
             await _interactions.RegisterCommandsGloballyAsync(deleteMissing: true);
-
+        #endif
             _commandsRegistered = true;
         }
     }
@@ -115,7 +116,6 @@ public class Bot
     {
         if (result.IsSuccess)
         {
-            await context.Interaction.FollowupAsync("Команда успешно выполнена.", ephemeral: true);
             return;
         }
 

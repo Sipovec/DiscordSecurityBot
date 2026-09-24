@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace DiscordSecurityBot.Modules;
 
+[RequireBotPermission(GuildPermission.ManageGuild)]
 public class ExportInvitesModule(ICsvExportService exportService) : ModuleBase
 {
     private readonly ICsvExportService _exportService = exportService;
@@ -21,7 +22,7 @@ public class ExportInvitesModule(ICsvExportService exportService) : ModuleBase
         SocketGuild guild = Context.Guild;
 
         // Get all guild invates
-        IReadOnlyCollection<RestInviteMetadata> invites = await guild.GetInvitesAsync(); // Need GatewayIntents.GuildMembers
+        IReadOnlyCollection<RestInviteMetadata> invites = await guild.GetInvitesAsync(); // Need ManageGuild
 
         // CSV format
         StringBuilder csvBuilder = new();
@@ -76,5 +77,7 @@ public class ExportInvitesModule(ICsvExportService exportService) : ModuleBase
 
         // Save file
         await _exportService.SaveCsvAsync(guild, "invites", csvBuilder.ToString());
+
+        await FollowupAsync("Команда успешно выполнена.", ephemeral: true);
     }
 }

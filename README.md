@@ -30,7 +30,6 @@
 ### Бот
 1. Скачать и распаковать архив [win-x64.zip](https://github.com/Sipovec/DiscordSecurityBot/releases).
 2. В `appsettings.json` указать:
-  - `TestGuildId` — ID гильдии(сервера), к которому нужно подключить бота.
   - `CliPath` — Путь до `keepassxc-cli.exe`.
   - `DbPath` — Путь до базы данных KeePassXC, в которой лежит токен бота.
   - `KeyFilePath` — Путь до ключевого файла, используемого для разблокировки базы данных. Если нет, то сделать пустой строкой `""`.

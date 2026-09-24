@@ -50,5 +50,7 @@ public class ExportChannelsModule(ICsvExportService exportService) : ModuleBase
         }
 
         await _exportService.SaveCsvAsync(guild, "channels", sb.ToString());
+
+        await FollowupAsync("Команда успешно выполнена.", ephemeral: true);
     }
 }

@@ -86,5 +86,7 @@ public class ExportWebhooksModule(ICsvExportService exportService) : ModuleBase
 
         // Сохранение файла
         await _exportService.SaveCsvAsync(guild, "webhooks", sb.ToString());
+
+        await FollowupAsync("Команда успешно выполнена.", ephemeral: true);
     }
 }

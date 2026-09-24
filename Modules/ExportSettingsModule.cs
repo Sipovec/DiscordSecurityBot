@@ -45,5 +45,7 @@ public class ExportGuildSettingsModule(ICsvExportService exportService) : Module
 
         // Сохранение файла
         await _exportService.SaveCsvAsync(guild, "settings", sb.ToString());
+
+        await FollowupAsync("Команда успешно выполнена.", ephemeral: true);
     }
 }

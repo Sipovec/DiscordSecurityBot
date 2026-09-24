@@ -39,5 +39,7 @@ public class ExportRolesModule(ICsvExportService exportService) : ModuleBase
 
         // Save file
         await _exportService.SaveCsvAsync(guild, "roles", sb.ToString());
+
+        await FollowupAsync("Команда успешно выполнена.", ephemeral: true);
     }
 }

@@ -69,8 +69,7 @@ public class ExportUsersModule(ICsvExportService exportService) : ModuleBase
 
         if (notFound.Count > 0)
         {
-            await FollowupAsync(
-                $"Roles not found: `{string.Join("`, `", notFound)}`", ephemeral: true);
+            await FollowupAsync($"Roles not found: `{string.Join("`, `", notFound)}`", ephemeral: true);
         }
 
         // Get users for role
@@ -111,6 +110,8 @@ public class ExportUsersModule(ICsvExportService exportService) : ModuleBase
 
         // Save file
         await _exportService.SaveCsvAsync(guild, "users", sb.ToString());
+
+        await FollowupAsync("Команда успешно выполнена.", ephemeral: true);
     }
 
     /// <summary>
