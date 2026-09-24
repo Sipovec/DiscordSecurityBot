@@ -1,14 +1,14 @@
 ﻿using Discord;
-using System;
-using System.Linq;
 
-namespace DiscordSecurityBot.Constants
+namespace DiscordSecurityBot.Constants;
+
+public static class DiscordPermissions
 {
-    public static class DiscordPermissions
-    {
-        private static readonly GuildPermission[] UiOrderRaw =
-        [
-            // Основные права сервера
+    public sealed record PermissionGroup(string Title, GuildPermission[] Permissions);
+
+    public static readonly PermissionGroup[] UiGroups =
+    [
+        new("Основные права сервера", [
             GuildPermission.ViewChannel,
             GuildPermission.ManageChannels,
             GuildPermission.ManageRoles,
@@ -19,16 +19,16 @@ namespace DiscordSecurityBot.Constants
             GuildPermission.ManageWebhooks,
             GuildPermission.ManageGuild,
             GuildPermission.ViewMonetizationAnalytics, // Только для серверов с монетизацией
-
-            // Права участников
+        ]),
+        new("Права участников", [
             GuildPermission.CreateInstantInvite,
             GuildPermission.ChangeNickname,
             GuildPermission.ManageNicknames,
             GuildPermission.KickMembers,
             GuildPermission.BanMembers,
             GuildPermission.ModerateMembers,
-
-            // Права текстового канала
+        ]),
+        new("Права текстового канала", [
             GuildPermission.SendMessages,
             GuildPermission.SendMessagesInThreads,
             GuildPermission.CreatePublicThreads,
@@ -47,8 +47,8 @@ namespace DiscordSecurityBot.Constants
             GuildPermission.SendTTSMessages,
             GuildPermission.SendVoiceMessages,
             GuildPermission.SendPolls,
-
-            // Права голосового канала
+        ]),
+        new("Права голосового канала", [
             GuildPermission.Connect,
             GuildPermission.Speak,
             GuildPermission.Stream,
@@ -60,25 +60,22 @@ namespace DiscordSecurityBot.Constants
             GuildPermission.DeafenMembers,
             GuildPermission.MoveMembers,
             GuildPermission.SetVoiceChannelStatus,
-            
-            // Права приложений
+        ]),
+        new("Права приложений", [
             GuildPermission.UseApplicationCommands,
             GuildPermission.StartEmbeddedActivities,
             GuildPermission.UseExternalApps,
-            GuildPermission.UseClydeAI, // Скрытое право, вроде нельзя получить
-
-            // Права для трибуны
+            GuildPermission.UseClydeAI, // Скрытое право, вроде нельзя изменить
+        ]),
+        new("Права для трибуны", [
             GuildPermission.RequestToSpeak,
-
-            // Права доступа к событиям
+        ]),
+        new("Права доступа к событиям", [
             GuildPermission.CreateEvents,
             GuildPermission.ManageEvents,
-
-            // Расширенные права
-            GuildPermission.Administrator
-        ];
-
-        // В конец дописывает права неучтённые в списке
-        public static readonly GuildPermission[] UiPermissionOrder = [.. UiOrderRaw, .. Enum.GetValues<GuildPermission>().Except(UiOrderRaw)];
-    }
+        ]),
+        new("Расширенные права", [
+            GuildPermission.Administrator,
+        ]),
+    ];
 }
