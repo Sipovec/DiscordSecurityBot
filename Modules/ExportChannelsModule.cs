@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Discord.Interactions;
+﻿using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordSecurityBot.Helpers;
 using DiscordSecurityBot.Models;
 using DiscordSecurityBot.Services;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace DiscordSecurityBot.Modules;
 
@@ -32,6 +33,8 @@ public class ExportChannelsModule(ICsvExportService exportService) : ModuleBase
         ];
         sb.AppendLine(string.Join(",", headers.Select(CsvFormatter.FormatCsvField)));
 
+        CultureInfo invar = CultureInfo.InvariantCulture;
+
         foreach (ChannelRecord rec in records)
         {
             string[] values =
@@ -41,9 +44,9 @@ public class ExportChannelsModule(ICsvExportService exportService) : ModuleBase
                 rec.CategoryName,
                 rec.Topic,
                 rec.Nsfw.ToString(),
-                rec.SlowMode.ToString(),
-                rec.Bitrate.ToString(),
-                rec.UserLimit.ToString(),
+                rec.SlowMode.ToString(invar),
+                rec.Bitrate.ToString(invar),
+                rec.UserLimit.ToString(invar),
                 rec.OverwritesJson
             ];
             sb.AppendLine(string.Join(",", values.Select(CsvFormatter.FormatCsvField)));
