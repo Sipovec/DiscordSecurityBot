@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace DiscordSecurityBot.Modules
@@ -21,8 +22,8 @@ namespace DiscordSecurityBot.Modules
                 .WithColor(Color.Gold)
                 .AddField("Имя", owner.Mention ?? owner.Username, true)
                 .AddField("ID", owner.Id, true)
-                .AddField("Присоединился", owner.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "Неизвестно", true)
-                .AddField("Аккаунт создан", owner.CreatedAt.ToString("dd.MM.yyyy HH:mm"), true);
+                .AddField("Присоединился", owner.JoinedAt?.ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture) ?? "Неизвестно", true)
+                .AddField("Аккаунт создан", owner.CreatedAt.ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture), true);
 
             // Вывод данных в embed сообщении
             await FollowupAsync(embed: embed.Build(), ephemeral: true);
