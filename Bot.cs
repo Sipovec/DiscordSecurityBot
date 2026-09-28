@@ -1,16 +1,22 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using DiscordSecurityBot.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using DiscordSecurityBot.Models;
 
 namespace DiscordSecurityBot;
 
+[SuppressMessage(
+    "Usage",
+    "CA2213:Disposable fields should be disposed",
+    Justification = "DiscordSocketClient is a DI singleton; the host container disposes it. " +
+                    "Bot only performs graceful shutdown via LogoutAsync/StopAsync.")]
 public class Bot
 (
     DiscordSocketClient client,
@@ -139,7 +145,7 @@ public class Bot
     }
 
     // При завершении работы
-    public override async Task StopAsync(CancellationToken stopToken)
+    public override async Task StopAsync(CancellationToken cancellationToken)
     {
         // Отписка от событий (в обратном порядке)
         _interactions.SlashCommandExecuted -= OnSlashCommandExecutedAsync;
@@ -152,6 +158,6 @@ public class Bot
         await _client.StopAsync();
 
         // Остановка BackgroundService
-        await base.StopAsync(stopToken);
+        await base.StopAsync(cancellationToken);
     }
 }

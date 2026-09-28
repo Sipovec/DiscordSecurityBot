@@ -4,6 +4,16 @@ root = true
 # Файлы C#
 [*.cs]
 
+#### Severity ####
+
+# CA1515:Consider making public types internal
+# Discord.NET uses reflection, the type must be public.
+dotnet_diagnostic.CA1515.severity = none
+
+# CA2007: Do not directly await a Task
+# Don't need for app, only for library
+dotnet_diagnostic.CA2007.severity = none
+
 #### Основные параметры EditorConfig ####
 
 # Отступы и интервалы
