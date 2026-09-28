@@ -5,6 +5,7 @@ using DiscordSecurityBot.Constants;
 using DiscordSecurityBot.Helpers;
 using DiscordSecurityBot.Services;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,13 +22,13 @@ public class ExportRolesModule(ICsvExportService exportService) : ModuleBase
         SocketGuild guild = Context.Guild;
         List<SocketRole> roles = [.. guild.Roles.OrderByDescending(r => r.Position)];
 
-        DiscordPermissions.PermissionGroup[] groups = DiscordPermissions.UiGroups;
+        ImmutableArray<PermissionGroup> groups = DiscordPermissions.UiGroups;
 
         StringBuilder sb = new();
 
         // Group names
         List<string> groupRow = [""];
-        foreach (DiscordPermissions.PermissionGroup group in groups)
+        foreach (PermissionGroup group in groups)
         {
             groupRow.Add(group.Title);
             for (int i = 1; i < group.Permissions.Length; i++)
@@ -39,7 +40,7 @@ public class ExportRolesModule(ICsvExportService exportService) : ModuleBase
 
         // Permission names
         List<string> permRow = ["Role Name"];
-        foreach (DiscordPermissions.PermissionGroup group in groups)
+        foreach (PermissionGroup group in groups)
         {
             foreach (GuildPermission perm in group.Permissions)
             {
@@ -52,7 +53,7 @@ public class ExportRolesModule(ICsvExportService exportService) : ModuleBase
         foreach (SocketRole role in roles)
         {
             List<string> row = [role.Name];
-            foreach (DiscordPermissions.PermissionGroup group in groups)
+            foreach (PermissionGroup group in groups)
             {
                 foreach (GuildPermission perm in group.Permissions)
                 { 

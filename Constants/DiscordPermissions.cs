@@ -1,12 +1,11 @@
 ﻿using Discord;
+using System.Collections.Immutable;
 
 namespace DiscordSecurityBot.Constants;
 
 public static class DiscordPermissions
 {
-    public sealed record PermissionGroup(string Title, GuildPermission[] Permissions);
-
-    public static readonly PermissionGroup[] UiGroups =
+    public static readonly ImmutableArray<PermissionGroup> UiGroups =
     [
         new("Основные права сервера", [
             GuildPermission.ViewChannel,
