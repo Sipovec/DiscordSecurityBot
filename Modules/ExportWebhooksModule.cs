@@ -5,6 +5,7 @@ using DiscordSecurityBot.Helpers;
 using DiscordSecurityBot.Services;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,7 +67,7 @@ public class ExportWebhooksModule(ICsvExportService exportService) : ModuleBase
 
             // Дата создания
             DateTimeOffset createdAt = SnowflakeUtils.FromSnowflake(webhook.Id);
-            string createdAtStr = createdAt.ToString("dd.MM.yy HH:mm:ss UTC");
+            string createdAtStr = createdAt.ToString("dd.MM.yy HH:mm:ss UTC", CultureInfo.InvariantCulture);
 
             // Наличие токена
             string hasTokenStr = string.IsNullOrEmpty(webhook.Token) ? "FALSE" : "TRUE";
