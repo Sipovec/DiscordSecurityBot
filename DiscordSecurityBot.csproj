@@ -57,4 +57,12 @@
 	  </None>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <EditorConfigFiles Remove="E:\Storage\Projects\C#\DiscordSecurityBot\.editorconfig" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="E:\Storage\Projects\C#\DiscordSecurityBot\.editorconfig" />
+	</ItemGroup>
+
 </Project>
