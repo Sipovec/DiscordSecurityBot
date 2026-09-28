@@ -40,8 +40,10 @@ public class ExportGuildSettingsModule(ICsvExportService exportService) : Module
         // Формирование CSV
         StringBuilder sb = new();
         sb.AppendLine(string.Join(",", sourceArray.Select(CsvFormatter.FormatCsvField)));
-        foreach (var kvp in settings.Properties)
+        foreach (KeyValuePair<string, string> kvp in settings.Properties)
+        {
             sb.AppendLine(string.Join(",", new[] { kvp.Key, kvp.Value }.Select(CsvFormatter.FormatCsvField)));
+        }
 
         // Сохранение файла
         await _exportService.SaveCsvAsync(guild, "settings", sb.ToString());
