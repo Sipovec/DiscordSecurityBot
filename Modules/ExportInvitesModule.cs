@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using DiscordSecurityBot.Helpers;
 using DiscordSecurityBot.Services;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,11 +53,13 @@ public class ExportInvitesModule(ICsvExportService exportService) : ModuleBase
             string inviterName = inviter?.Username ?? "";
 
             // Invites property
+            CultureInfo invar = CultureInfo.InvariantCulture;
+
             string code = invite.Code;
-            string maxUses = invite.MaxUses?.ToString() ?? "Безлимит";
-            string uses = invite.Uses?.ToString() ?? "0";
-            string createdAt = invite.CreatedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? "";
-            string expiresAt = invite.ExpiresAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Никогда";
+            string maxUses = invite.MaxUses?.ToString(invar) ?? "Безлимит";
+            string uses = invite.Uses?.ToString(invar) ?? "0";
+            string createdAt = invite.CreatedAt?.ToString("yyyy-MM-dd HH:mm:ss", invar) ?? "";
+            string expiresAt = invite.ExpiresAt?.ToString("yyyy-MM-dd HH:mm:ss", invar) ?? "Никогда";
             string isTemporary = invite.IsTemporary ? "TRUE" : "FALSE";
             string inviteUrl = $"https://discord.gg/{code}";
 
