@@ -74,7 +74,7 @@ class Program
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine(ex.Message);
+            await Console.Error.WriteLineAsync(ex.Message);
             return 1;
         }
     }
