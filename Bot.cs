@@ -80,7 +80,7 @@ public class Bot
             _ => LogLevel.Information
         };
 
-    private int _commandsRegistered = 0;
+    private int _commandsRegistered;
 
     // Регистрация команд для гильдии (ID указывается в appsettings)
     private async Task OnReadyAsync()
