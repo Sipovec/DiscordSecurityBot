@@ -10,6 +10,8 @@ public static class TokenVault
 {
     public static string? GetDiscordToken(IConfigurationSection config)
     {
+        ArgumentNullException.ThrowIfNull(config);
+
         Console.Write("Enter the password for the KeePassXC database: ");
         return FetchFromKeePass(MaskedPasswordInput(), config);
     }
