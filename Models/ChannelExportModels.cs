@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using Discord;
 using Discord.WebSocket;
+using DiscordSecurityBot.Helpers;
 
 namespace DiscordSecurityBot.Models;
 
@@ -66,8 +67,8 @@ public class ChannelRecord
                 {
                     TargetName = targetName,
                     TargetType = overwrite.TargetType == PermissionTarget.Role ? "Role" : "User",
-                    Allow = [.. overwrite.Permissions.ToAllowList().Select(p => p.ToString())],
-                    Deny = [.. overwrite.Permissions.ToDenyList().Select(p => p.ToString())]
+                    Allow = [.. overwrite.Permissions.ToAllowList().Select(p => p.GetName())],
+                    Deny = [.. overwrite.Permissions.ToDenyList().Select(p => p.GetName())]
                 };
             });
 
