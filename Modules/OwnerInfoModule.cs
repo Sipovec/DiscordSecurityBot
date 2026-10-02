@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Interactions;
+using Discord.Rest;
 using Discord.WebSocket;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -15,7 +16,9 @@ namespace DiscordSecurityBot.Modules
         public async Task OwnerInfoAsync()
         {
             SocketGuild guild = Context.Guild;
-            SocketGuildUser owner = guild.GetUser(guild.OwnerId);
+
+            DiscordSocketRestClient restClient = Context.Client.Rest;
+            RestGuildUser? owner = await restClient.GetGuildUserAsync(guild.Id, guild.OwnerId);
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithTitle("Информация о владельце сервера")
