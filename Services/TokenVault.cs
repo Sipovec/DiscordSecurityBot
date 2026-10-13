@@ -137,4 +137,3 @@ public static class TokenVault
         return sb.ToString();
     }
 }
-
