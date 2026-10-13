@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace DiscordSecurityBot.Modules;
 
-public class ExportRolesModule(ICsvExportService exportService) : ModuleBase
+public class ExportRolesCommand(ICsvExportService exportService) : CommandBase
 {
     private readonly ICsvExportService _exportService = exportService;
 

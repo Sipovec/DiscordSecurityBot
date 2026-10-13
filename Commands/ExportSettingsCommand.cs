@@ -12,7 +12,7 @@ using Discord.WebSocket;
 
 namespace DiscordSecurityBot.Modules;
 
-public class ExportGuildSettingsModule(ICsvExportService exportService) : ModuleBase
+public class ExportGuildSettingsModule(ICsvExportService exportService) : CommandBase
 {
     private readonly ICsvExportService _exportService = exportService;
     private static readonly string[] sourceArray = ["Setting", "Value"];

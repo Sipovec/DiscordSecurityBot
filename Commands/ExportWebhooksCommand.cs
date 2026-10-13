@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace DiscordSecurityBot.Modules;
 
 [RequireBotPermission(GuildPermission.ManageWebhooks)]
-public class ExportWebhooksModule(ICsvExportService exportService) : ModuleBase
+public class ExportWebhooksCommand(ICsvExportService exportService) : CommandBase
 {
     private readonly ICsvExportService _exportService = exportService;
 

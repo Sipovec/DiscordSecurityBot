@@ -10,7 +10,7 @@ namespace DiscordSecurityBot.Modules
     /// <summary>
     /// Модуль для получения информации о владельце гильдии.
     /// </summary>
-    public class OwnerInfoModule : ModuleBase
+    public class OwnerInfoCommand : CommandBase
     {
         [SlashCommand("owner", "Показывает информацию о владельце сервера.")]
         public async Task OwnerInfoAsync()

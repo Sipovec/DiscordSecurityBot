@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DiscordSecurityBot.Modules;
 
-public class ExportChannelsModule(ICsvExportService exportService) : ModuleBase
+public class ExportChannelsCommand(ICsvExportService exportService) : CommandBase
 {
     private readonly ICsvExportService _exportService = exportService;
 

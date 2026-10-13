@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace DiscordSecurityBot.Modules;
 
 [RequireBotPermission(GuildPermission.ManageGuild)]
-public class ExportInvitesModule(ICsvExportService exportService) : ModuleBase
+public class ExportInvitesCommand(ICsvExportService exportService) : CommandBase
 {
     private readonly ICsvExportService _exportService = exportService;
 
