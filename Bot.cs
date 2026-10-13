@@ -87,13 +87,9 @@ public class Bot
     {
         if (Interlocked.Exchange(ref _commandsRegistered, 1) == 0)
         {
-            #if DEBUG
-                await _interactions.RegisterCommandsToGuildAsync(_config.TestGuildId, deleteMissing: true);
-            #else
-                // Глобал. регистрация, есть задержка от минут до часа.
-                // Ограничение на 100 глобал. команд, но можно делать подкоманды
-                await _interactions.RegisterCommandsGloballyAsync(deleteMissing: true);
-            #endif
+            // Глобал. регистрация, есть задержка от минут до часа.
+            // Ограничение на 100 глобал. команд, но можно делать подкоманды
+            await _interactions.RegisterCommandsGloballyAsync(deleteMissing: true);
         }
     }
 
