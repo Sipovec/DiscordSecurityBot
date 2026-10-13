@@ -16,7 +16,7 @@ public class ExportRolesCommand(ICsvExportService exportService) : CommandBase
 {
     private readonly ICsvExportService _exportService = exportService;
 
-    [SlashCommand("exportroles", "Экспорт ролей в csv.")]
+    [SlashCommand("export_roles", "Экспорт ролей в csv.")]
     public async Task ExportRolesAsync()
     {
         SocketGuild guild = Context.Guild;

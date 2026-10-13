@@ -17,7 +17,7 @@ public class ExportInvitesCommand(ICsvExportService exportService) : CommandBase
 {
     private readonly ICsvExportService _exportService = exportService;
 
-    [SlashCommand("exportinvites", "Экспорт приглашений в csv.")]
+    [SlashCommand("export_invites", "Экспорт приглашений в csv.")]
     public async Task ExportInvitesAsync()
     {
         SocketGuild guild = Context.Guild;

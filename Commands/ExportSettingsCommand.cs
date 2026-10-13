@@ -17,7 +17,7 @@ public class ExportGuildSettingsModule(ICsvExportService exportService) : Comman
     private readonly ICsvExportService _exportService = exportService;
     private static readonly string[] sourceArray = ["Setting", "Value"];
 
-    [SlashCommand("exportsettings", "Экспорт настроек сервера в csv.")]
+    [SlashCommand("export_settings", "Экспорт настроек сервера в csv.")]
     public async Task ExportSettingsAsync()
     {
         SocketGuild guild = Context.Guild;

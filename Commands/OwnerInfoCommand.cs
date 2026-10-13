@@ -12,7 +12,7 @@ namespace DiscordSecurityBot.Modules
     /// </summary>
     public class OwnerInfoCommand : CommandBase
     {
-        [SlashCommand("owner", "Показывает информацию о владельце сервера.")]
+        [SlashCommand("owner_info", "Показывает информацию о владельце сервера.")]
         public async Task OwnerInfoAsync()
         {
             SocketGuild guild = Context.Guild;

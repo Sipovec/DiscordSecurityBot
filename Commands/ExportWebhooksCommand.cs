@@ -17,7 +17,7 @@ public class ExportWebhooksCommand(ICsvExportService exportService) : CommandBas
 {
     private readonly ICsvExportService _exportService = exportService;
 
-    [SlashCommand("exportwebhooks", "Экспорт вебхуков в csv.")]
+    [SlashCommand("export_webhooks", "Экспорт вебхуков в csv.")]
     public async Task ExportWebhooksAsync()
     {
         SocketGuild guild = Context.Guild;
