@@ -87,7 +87,7 @@ public class ExportBotsCommand(ICsvExportService exportService) : CommandBase
         }
 
         // Save file
-        await _exportService.SaveCsvAsync(guild, "integration", sb.ToString());
+        await _exportService.SaveCsvAsync(guild, "bosts", sb.ToString());
 
         await FollowupAsync("Команда успешно выполнена.", ephemeral: true);
     }
