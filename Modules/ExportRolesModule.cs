@@ -47,6 +47,7 @@ public class ExportRolesModule(ICsvExportService exportService) : ModuleBase
                 permRow.Add(perm.ToString());
             }
         }
+        permRow.Add("Is Bot");
         sb.AppendLine(string.Join(",", permRow.Select(CsvFormatter.FormatCsvField)));
 
         // Data rows
@@ -60,6 +61,7 @@ public class ExportRolesModule(ICsvExportService exportService) : ModuleBase
                     row.Add(role.Permissions.Has(perm) ? "TRUE" : "FALSE");
                 }
             }
+            row.Add(role.Tags.BotId.HasValue ? "TRUE" : "FALSE");
             sb.AppendLine(string.Join(",", row.Select(CsvFormatter.FormatCsvField)));
         }
 
