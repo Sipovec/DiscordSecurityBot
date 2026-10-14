@@ -65,6 +65,7 @@ class Program
 
                 services.AddHostedService<Bot>();
                 services.AddTransient<ICsvExportService, CsvExportService>();
+                services.AddTransient<IXlsxExportService, XlsxExportService>();
             })
             .Build();
 

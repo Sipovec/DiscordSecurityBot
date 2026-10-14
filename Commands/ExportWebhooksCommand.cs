@@ -1,32 +1,25 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using DiscordSecurityBot.Helpers;
 using DiscordSecurityBot.Services;
-using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DiscordSecurityBot.Modules;
 
 [RequireBotPermission(GuildPermission.ManageWebhooks)]
-public class ExportWebhooksCommand(ICsvExportService exportService) : CommandBase
+public class ExportWebhooksCommand(IXlsxExportService exportService) : CommandBase
 {
-    private readonly ICsvExportService _exportService = exportService;
+    private readonly IXlsxExportService _exportService = exportService;
 
     [SlashCommand("export_webhooks", "Экспорт вебхуков в csv.")]
     public async Task ExportWebhooksAsync()
     {
         SocketGuild guild = Context.Guild;
 
-        IReadOnlyCollection<IWebhook> webhooks = await guild.GetWebhooksAsync(); // Need ManageWebhooks
+        // Need ManageWebhooks
+        IReadOnlyCollection<IWebhook> webhooks = await guild.GetWebhooksAsync();
 
-        IOrderedEnumerable<IWebhook> sortedWebhooks = webhooks.OrderBy(w => w.Name ?? string.Empty);
-
-        // Заголовки без ID
         string[] headers =
         [
             "Name",
@@ -37,56 +30,26 @@ public class ExportWebhooksCommand(ICsvExportService exportService) : CommandBas
             "Has Token"
         ];
 
-        StringBuilder sb = new();
-        sb.AppendLine(string.Join(",", headers.Select(CsvFormatter.FormatCsvField)));
-
-        foreach (IWebhook webhook in sortedWebhooks)
+        List<IReadOnlyList<object?>> rows = [];
+        foreach (IWebhook webhook in webhooks)
         {
-            // Имя веб-хука
-            string name = webhook.Name ?? string.Empty;
+            string channelName = webhook.ChannelId is { } channelId
+                ? guild.GetChannel(channelId)?.Name ?? ""
+                : "";
 
-            // Имя канала (без ID)
-            string channelName = "";
-            if (webhook.ChannelId.HasValue)
-            {
-                SocketGuildChannel channel = guild.GetChannel(webhook.ChannelId.Value);
-                if (channel != null)
-                {
-                    channelName = channel.Name;
-                }
-            }
-
-            string typeStr = webhook.Type.ToString();
-
-            // Имя создателя
-            string creatorName = "";
-            if (webhook.Creator != null)
-            { 
-                creatorName = webhook.Creator.Username; 
-            }
-
-            // Дата создания
-            DateTimeOffset createdAt = SnowflakeUtils.FromSnowflake(webhook.Id);
-            string createdAtStr = createdAt.ToString("dd.MM.yy HH:mm:ss UTC", CultureInfo.InvariantCulture);
-
-            // Наличие токена
-            string hasTokenStr = string.IsNullOrEmpty(webhook.Token) ? "FALSE" : "TRUE";
-
-            string[] fields =
+            rows.Add(
             [
-                name,
+                webhook.Name ?? "",
                 channelName,
-                typeStr,
-                creatorName,
-                createdAtStr,
-                hasTokenStr
-            ];
-
-            sb.AppendLine(string.Join(",", fields.Select(CsvFormatter.FormatCsvField)));
+                webhook.Type.ToString(),
+                webhook.Creator?.Username ?? "",
+                webhook.CreatedAt.UtcDateTime,
+                !string.IsNullOrEmpty(webhook.Token)
+            ]);
         }
 
-        // Сохранение файла
-        await _exportService.SaveCsvAsync(guild, "webhooks", sb.ToString());
+        // Save file
+        await _exportService.SaveXlsxAsync(guild, "webhooks", headers, rows);
 
         await FollowupAsync("Команда успешно выполнена.", ephemeral: true);
     }
