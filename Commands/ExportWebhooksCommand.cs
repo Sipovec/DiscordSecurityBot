@@ -12,23 +12,23 @@ public class ExportWebhooksCommand(IXlsxExportService exportService) : CommandBa
 {
     private readonly IXlsxExportService _exportService = exportService;
 
-    [SlashCommand("export_webhooks", "Экспорт вебхуков в csv.")]
+    private static readonly IReadOnlyList<string> _headers =
+    [
+        "Name",
+        "Channel",
+        "Type",
+        "Creator",
+        "Created At",
+        "Has Token"
+    ];
+
+    [SlashCommand("export_webhooks", "Экспорт вебхуков в XLSX.")]
     public async Task ExportWebhooksAsync()
     {
         SocketGuild guild = Context.Guild;
 
         // Need ManageWebhooks
         IReadOnlyCollection<IWebhook> webhooks = await guild.GetWebhooksAsync();
-
-        string[] headers =
-        [
-            "Name",
-            "Channel",
-            "Type",
-            "Creator",
-            "Created At",
-            "Has Token"
-        ];
 
         List<IReadOnlyList<object?>> rows = [];
         foreach (IWebhook webhook in webhooks)
@@ -49,7 +49,7 @@ public class ExportWebhooksCommand(IXlsxExportService exportService) : CommandBa
         }
 
         // Save file
-        await _exportService.SaveXlsxAsync(guild, "webhooks", headers, rows);
+        await _exportService.SaveXlsxAsync(guild, "webhooks", _headers, rows);
 
         await FollowupAsync("Команда успешно выполнена.", ephemeral: true);
     }
