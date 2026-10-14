@@ -1,21 +1,24 @@
 ﻿using Discord.Interactions;
 using Discord.WebSocket;
-using DiscordSecurityBot.Helpers;
 using DiscordSecurityBot.Models;
 using DiscordSecurityBot.Services;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DiscordSecurityBot.Modules;
 
-public class ExportChannelsCommand(ICsvExportService exportService) : CommandBase
+public class ExportChannelsCommand(IXlsxExportService exportService) : CommandBase
 {
-    private readonly ICsvExportService _exportService = exportService;
+    private readonly IXlsxExportService _exportService = exportService;
 
-    [SlashCommand("export_channels", "Экспорт каналов в csv.")]
+    private static readonly IReadOnlyList<string> _headers =
+    [
+        "ChannelName", "ChannelType", "CategoryName", "Topic",
+        "NSFW", "SlowMode", "Bitrate", "UserLimit", "OverwritesJson"
+    ];
+
+    [SlashCommand("export_channels", "Экспорт каналов в XLSX.")]
     public async Task ExportChannelsAsync()
     {
         SocketGuild guild = Context.Guild;
@@ -23,36 +26,25 @@ public class ExportChannelsCommand(ICsvExportService exportService) : CommandBas
         // DTO
         List<ChannelRecord> records = [.. guild.Channels.Select(channel => new ChannelRecord(channel, guild))];
 
-        // Формирование CSV
-        StringBuilder sb = new();
-
-        string[] headers =
-        [
-            "ChannelName", "ChannelType", "CategoryName", "Topic", 
-            "NSFW", "SlowMode", "Bitrate", "UserLimit", "OverwritesJson"
-        ];
-        sb.AppendLine(string.Join(",", headers.Select(CsvFormatter.FormatCsvField)));
-
-        CultureInfo invar = CultureInfo.InvariantCulture;
-
+        List<IReadOnlyList<object?>> rows = [];
         foreach (ChannelRecord rec in records)
         {
-            string[] values =
+            rows.Add(
             [
                 rec.ChannelName,
                 rec.ChannelType,
                 rec.CategoryName,
                 rec.Topic,
-                rec.Nsfw.ToString(),
-                rec.SlowMode.ToString(invar),
-                rec.Bitrate.ToString(invar),
-                rec.UserLimit.ToString(invar),
+                rec.Nsfw,
+                rec.SlowMode,
+                rec.Bitrate,
+                rec.UserLimit,
                 rec.OverwritesJson
-            ];
-            sb.AppendLine(string.Join(",", values.Select(CsvFormatter.FormatCsvField)));
+            ]);
         }
 
-        await _exportService.SaveCsvAsync(guild, "channels", sb.ToString());
+        // Save file
+        await _exportService.SaveXlsxAsync(guild, "channels", _headers, rows);
 
         await FollowupAsync("Команда успешно выполнена.", ephemeral: true);
     }
