@@ -2,71 +2,74 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordSecurityBot.Constants;
-using DiscordSecurityBot.Helpers;
 using DiscordSecurityBot.Services;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DiscordSecurityBot.Modules;
 
-public class ExportRolesCommand(ICsvExportService exportService) : CommandBase
+public class ExportRolesCommand(IXlsxExportService exportService) : CommandBase
 {
-    private readonly ICsvExportService _exportService = exportService;
+    private readonly IXlsxExportService _exportService = exportService;
 
-    [SlashCommand("export_roles", "Экспорт ролей в csv.")]
+    [SlashCommand("export_roles", "Экспорт ролей в XLSX.")]
     public async Task ExportRolesAsync()
     {
         SocketGuild guild = Context.Guild;
-        List<SocketRole> roles = [.. guild.Roles.OrderByDescending(r => r.Position)];
+
+        IEnumerable<SocketRole> roles = guild.Roles.OrderByDescending(r => r.Position);
 
         ImmutableArray<PermissionGroup> groups = DiscordPermissions.UiGroups;
 
-        StringBuilder sb = new();
-
-        // Group names
-        List<string> groupRow = [""];
+        // Groups
+        List<string> headers = [""];
         foreach (PermissionGroup group in groups)
         {
-            groupRow.Add(group.Title);
+            headers.Add(group.Title);
+
             for (int i = 1; i < group.Permissions.Length; i++)
             {
-                groupRow.Add("");
+                headers.Add("");
             }
         }
-        sb.AppendLine(string.Join(",", groupRow.Select(CsvFormatter.FormatCsvField)));
+        headers.Add("");
+
+        List<IReadOnlyList<object?>> rows = [];
 
         // Permission names
-        List<string> permRow = ["Role Name"];
+        List<object?> permissionRow = [""];
         foreach (PermissionGroup group in groups)
         {
-            foreach (GuildPermission perm in group.Permissions)
+            foreach (GuildPermission permission in group.Permissions)
             {
-                permRow.Add(perm.ToString());
+                permissionRow.Add(permission.ToString());
             }
         }
-        permRow.Add("Is Bot");
-        sb.AppendLine(string.Join(",", permRow.Select(CsvFormatter.FormatCsvField)));
+        permissionRow.Add("Is Bot");
 
-        // Data rows
+        rows.Add(permissionRow);
+
+        // Data
         foreach (SocketRole role in roles)
         {
-            List<string> row = [role.Name];
+            List<object?> row = [role.Name];
+
             foreach (PermissionGroup group in groups)
             {
-                foreach (GuildPermission perm in group.Permissions)
-                { 
-                    row.Add(role.Permissions.Has(perm) ? "TRUE" : "FALSE");
+                foreach (GuildPermission permission in group.Permissions)
+                {
+                    row.Add(role.Permissions.Has(permission));
                 }
             }
-            row.Add(role.Tags.BotId.HasValue ? "TRUE" : "FALSE");
-            sb.AppendLine(string.Join(",", row.Select(CsvFormatter.FormatCsvField)));
+            row.Add(role.Tags.BotId.HasValue);
+
+            rows.Add(row);
         }
 
         // Save file
-        await _exportService.SaveCsvAsync(guild, "roles", sb.ToString());
+        await _exportService.SaveXlsxAsync(guild, "roles", headers, rows);
 
         await FollowupAsync("Команда успешно выполнена.", ephemeral: true);
     }
