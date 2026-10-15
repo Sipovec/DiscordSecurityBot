@@ -48,7 +48,6 @@ public class ExportRolesCommand(IXlsxExportService exportService) : CommandBase
             }
         }
         permissionRow.Add("Is Bot");
-
         rows.Add(permissionRow);
 
         // Data
@@ -64,7 +63,6 @@ public class ExportRolesCommand(IXlsxExportService exportService) : CommandBase
                 }
             }
             row.Add(role.Tags.BotId.HasValue);
-
             rows.Add(row);
         }
 
