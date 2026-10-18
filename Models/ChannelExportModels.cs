@@ -47,7 +47,8 @@ public class ChannelRecord
         }
 
         // Overwrites
-        if (channel.PermissionOverwrites.Count > 0)
+        // System.NotSupportedException: "This method is not supported in threads."
+        if (channel is not SocketThreadChannel && channel.PermissionOverwrites.Count > 0)
         {
             IEnumerable<OverwriteRecord> overwriteRecords = channel.PermissionOverwrites.Select(overwrite =>
             {
