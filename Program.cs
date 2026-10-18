@@ -33,8 +33,7 @@ class Program
 
                 BotConfig botConfig = new()
                 {
-                    Token = token,
-                    TestGuildId = config.GetValue<ulong>("Discord:TestGuildId")
+                    Token = token
                 };
 
                 services.AddSingleton(botConfig);
