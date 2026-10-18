@@ -17,11 +17,22 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
+      with:
+      fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v6
       with:
         dotnet-version: 10.0.x
+
+    - name: Get version
+      id: version
+      shell: pwsh
+      run: |
+        $v = dotnet msbuild DiscordSecurityBot.csproj -target:PrintVersion -verbosity:quiet -nologo |
+          Select-String 'PROJECT_VERSION=' |
+          Select-Object -Last 1
+        "version=$($v -replace '.*PROJECT_VERSION=', '')" >> $env:GITHUB_OUTPUT
 
     - name: Restore dependencies
       run: dotnet restore -r win-x64
@@ -39,12 +50,12 @@ jobs:
     - name: Create ZIP archive
       run: >
         Compress-Archive -Path ./publish/win-x64/*
-        -DestinationPath ./DiscordSecurityBot-v1.5.${{ github.run_number }}-win-x64.zip
+        -DestinationPath ./DiscordSecurityBot-${{ steps.version.outputs.version }}-win-x64.zip
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v3
       with:
-        name: v1.5.${{ github.run_number }}
-        tag_name: v1.5.${{ github.run_number }}
-        files: DiscordSecurityBot-v1.5.${{ github.run_number }}-win-x64.zip
+        name: ${{ steps.version.outputs.version }}
+        tag_name: ${{ steps.version.outputs.version }}
+        files: DiscordSecurityBot-${{ steps.version.outputs.version }}-win-x64.zip
         generate_release_notes: true

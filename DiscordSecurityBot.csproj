@@ -24,11 +24,32 @@
 		<WarningLevel>9999</WarningLevel>
 	</PropertyGroup>
 
-	<!-- Версия сборки -->
+	<!-- Version -->
 	<PropertyGroup>
-		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-		<Deterministic>False</Deterministic>
+		<VersionPrefix>1.5.0</VersionPrefix>
+		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 	</PropertyGroup>
+
+	<Target Name="SetGitRevision" BeforeTargets="GetAssemblyVersion">
+		<Exec Command="git rev-list --count HEAD"
+			  ConsoleToMSBuild="true">
+			<Output TaskParameter="ConsoleOutput"
+					PropertyName="_GitRevision" />
+		</Exec>
+
+		<PropertyGroup>
+			<_GitRevision Condition="'$(_GitRevision)' == ''">0</_GitRevision>
+
+			<Version>$(VersionPrefix).$(_GitRevision)</Version>
+			<AssemblyVersion>$(Version)</AssemblyVersion>
+			<FileVersion>$(Version)</FileVersion>
+			<InformationalVersion>$(Version)</InformationalVersion>
+		</PropertyGroup>
+	</Target>
+
+	<Target Name="PrintVersion" DependsOnTargets="SetGitRevision">
+		<Message Text="PROJECT_VERSION=$(Version)" Importance="High" />
+	</Target>
 
 	<!-- Настройки путей сборки -->
 	<PropertyGroup>
@@ -36,11 +57,8 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<AppendPlatformToOutputPath>false</AppendPlatformToOutputPath>
 	</PropertyGroup>
-	
-	<!-- Настройка кофигурации сборки -->
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></PropertyGroup>
 
+	<!-- NuGet -->
 	<ItemGroup>
 	  <PackageReference Include="ClosedXML" Version="0.105.1" />
 	  <PackageReference Include="Discord.Net" Version="3.20.2" />
