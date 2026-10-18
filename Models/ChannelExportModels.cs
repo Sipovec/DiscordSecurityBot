@@ -10,7 +10,7 @@ namespace DiscordSecurityBot.Models;
 public class ChannelRecord
 {
     public string ChannelName { get; }
-    public string ChannelType { get; }
+    public ChannelType? ChannelType { get; }
     public string CategoryName { get; }
     public string Topic { get; } = "";
     public bool Nsfw { get; }
@@ -22,7 +22,7 @@ public class ChannelRecord
     public ChannelRecord(SocketGuildChannel channel, SocketGuild guild)
     {
         ChannelName = channel.Name;
-        ChannelType = channel.GetChannelType().ToString() ?? "Unknown";
+        ChannelType = channel.GetChannelType();
         CategoryName = channel is INestedChannel { CategoryId: ulong catId }
             ? guild.GetChannel(catId)?.Name ?? ""
             : "";
