@@ -18,12 +18,12 @@ namespace DiscordSecurityBot.Modules
             SocketGuild guild = Context.Guild;
 
             DiscordSocketRestClient restClient = Context.Client.Rest;
-            RestGuildUser? owner = await restClient.GetGuildUserAsync(guild.Id, guild.OwnerId);
+            RestGuildUser owner = await restClient.GetGuildUserAsync(guild.Id, guild.OwnerId);
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithTitle("Информация о владельце сервера")
                 .WithColor(Color.Gold)
-                .AddField("Имя", owner.Mention ?? owner.Username, true)
+                .AddField("Имя", owner.Mention, true)
                 .AddField("ID", owner.Id, true)
                 .AddField("Присоединился", owner.JoinedAt?.ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture) ?? "Неизвестно", true)
                 .AddField("Аккаунт создан", owner.CreatedAt.ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture), true);
