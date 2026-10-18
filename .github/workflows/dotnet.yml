@@ -56,9 +56,9 @@ jobs:
     - name: Publish for Windows
       run: >
         dotnet publish DiscordSecurityBot.csproj
-        --configuration Release
-        -r win-x64
+        --configuration Release -r win-x64
         --self-contained true
+        --no-restore
         -p:PublishSingleFile=true
         -p:DebugType=None -p:DebugSymbols=false
         --output ./publish/win-x64
