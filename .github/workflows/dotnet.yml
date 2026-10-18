@@ -29,10 +29,26 @@ jobs:
       id: version
       shell: pwsh
       run: |
-        $v = dotnet msbuild DiscordSecurityBot.csproj -target:PrintVersion -verbosity:quiet -nologo |
-          Select-String 'PROJECT_VERSION=' |
+        $output = dotnet msbuild DiscordSecurityBot.csproj `
+          -target:PrintVersion `
+          -verbosity:normal `
+          -nologo
+
+        if ($LASTEXITCODE -ne 0) {
+          throw "MSBuild failed to determine version"
+        }
+
+        $match = $output |
+          Select-String 'PROJECT_VERSION=(\S+)' |
           Select-Object -Last 1
-        "version=$($v -replace '.*PROJECT_VERSION=', '')" >> $env:GITHUB_OUTPUT
+
+        if (-not $match) {
+          throw "PROJECT_VERSION not found. MSBuild output:`n$output"
+        }
+
+        $version = $match.Matches[0].Groups[1].Value
+        Write-Host "Detected version: [$version]"
+        "version=$version" >> $env:GITHUB_OUTPUT
 
     - name: Restore dependencies
       run: dotnet restore -r win-x64
